@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> REQUESTED
+
+    REQUESTED --> UNDER_REVIEW : SUBMIT
+
+    UNDER_REVIEW --> APPROVED : APPROVE
+    UNDER_REVIEW --> REJECTED : REJECT
+    UNDER_REVIEW --> REQUESTED : REVERT
+
+    APPROVED --> [*]
+    REJECTED --> [*]

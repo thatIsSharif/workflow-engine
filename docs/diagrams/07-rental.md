@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> DRAFT
+
+    DRAFT --> UNDER_REVIEW : SUBMIT
+
+    UNDER_REVIEW --> APPROVED : APPROVE
+    UNDER_REVIEW --> REJECTED : REJECT
+    UNDER_REVIEW --> DRAFT : REVERT
+
+    APPROVED --> SIGNED : SIGN
+
+    SIGNED --> [*]
+    REJECTED --> [*]

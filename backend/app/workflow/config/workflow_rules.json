@@ -1,0 +1,23 @@
+{
+  "action_rules": {
+    "SUBMIT": {
+      "from_initial_state_only": true
+    },
+    "APPROVE": {
+      "forbidden_to_states": ["REJECTED"],
+      "forbidden_to_terminal_states": ["REJECTED"]
+    },
+    "REJECT": {
+      "required_to_state": "REJECTED"
+    },
+    "REVERT": {
+      "allowed_to_states": ["DRAFT", "REQUESTED", "PENDING","OFFICER_REVIEW","CONTROLLER_REVIEW","CONTROLLER_APPROVAL"]
+    }
+  },
+  "allowed_actions": ["SUBMIT", "APPROVE", "REJECT", "REVERT", "SIGN", "CONFIRM"],
+  "allow_self_loops": false,
+  "initial_state_strategy": "FIRST_STATE",
+  "terminal_state_strategy": "NO_OUTGOING_TRANSITIONS",
+  "require_all_states_reachable": true,
+  "require_path_to_terminal": true
+}

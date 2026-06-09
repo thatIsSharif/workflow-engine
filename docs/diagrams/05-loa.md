@@ -1,0 +1,11 @@
+stateDiagram-v2
+    [*] --> DRAFT
+
+    DRAFT --> ADMIN_REVIEW : SUBMIT (USER)
+
+    ADMIN_REVIEW --> APPROVED : APPROVE (ADMIN)
+    ADMIN_REVIEW --> REJECTED : REJECT
+    ADMIN_REVIEW --> DRAFT : REVERT
+
+    APPROVED --> [*]
+    REJECTED --> [*]
