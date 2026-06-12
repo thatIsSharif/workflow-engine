@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
 import { MODULE_LABELS, type ModuleType } from '@/types';
 
-interface FieldDef {
+export interface FieldDef {
   name: string;
   label: string;
   type?: 'text' | 'email' | 'date' | 'number' | 'textarea';

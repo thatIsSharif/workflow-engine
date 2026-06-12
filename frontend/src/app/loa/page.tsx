@@ -1,22 +1,15 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { loaApi } from '@/lib/api';
 import { StatusBadge } from '@/components/WorkflowStatus';
+import { useModuleList } from '@/hooks/useModuleList';
+import { PAGE_TITLES, NEW_BUTTON_LABELS, EMPTY_MESSAGES } from '@/constants';
 import type { LOARead } from '@/types';
 
 export default function LOAListPage() {
-  const [items, setItems] = useState<LOARead[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loaApi
-      .list()
-      .then(setItems)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { items, loading } = useModuleList<LOARead>(loaApi);
+  const mod = 'LOA';
 
   if (loading) {
     return (
@@ -30,21 +23,21 @@ export default function LOAListPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Letters of Authorization</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{PAGE_TITLES[mod]}</h1>
         <Link
           href="/loa/new"
           className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
-          + New LOA
+          {NEW_BUTTON_LABELS[mod]}
         </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {items.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
-            No LOA applications yet.
+            {EMPTY_MESSAGES[mod].title}
             <Link href="/loa/new" className="block mt-2 text-indigo-600 hover:underline">
-              Create your first LOA
+              {EMPTY_MESSAGES[mod].linkText}
             </Link>
           </div>
         ) : (

@@ -9,7 +9,7 @@ import { StatusBadge } from './WorkflowStatus';
 import type { ModuleType, DomainReadBase, WorkflowHistoryEntry, ApplicationStatusResponse, ActionType } from '@/types';
 import { MODULE_LABELS, MODULE_ICONS } from '@/types';
 
-interface FieldDisplay {
+export interface FieldDisplay {
   label: string;
   value: string | number | null | undefined;
 }
