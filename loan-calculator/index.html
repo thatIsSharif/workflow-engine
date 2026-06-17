@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 440px;
+            padding: 36px 32px 32px;
+        }
+
+        .calculator h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .calculator .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper .prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 15px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .form-group .input-wrapper .suffix {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+            background: #fff;
+        }
+
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-group .input-wrapper.padded-left input {
+            padding-left: 32px;
+        }
+
+        .form-group .input-wrapper.padded-right input {
+            padding-right: 44px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 14px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 4px;
+        }
+
+        .calculate-btn:hover {
+            opacity: 0.92;
+        }
+
+        .calculate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .result {
+            margin-top: 24px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .result .result-row:not(:last-child) {
+            border-bottom: 1px solid #e8e8f0;
+        }
+
+        .result .result-row .label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result .result-row .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .result .result-row .value.highlight {
+            font-size: 22px;
+            color: #667eea;
+        }
+
+        .result .result-divider {
+            height: 1px;
+            background: #e0e0f0;
+            margin: 8px 0;
+        }
+
+        .result .total-interest {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Loan Calculator</h1>
+        <p class="subtitle">Calculate your monthly loan payments</p>
+
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount</label>
+            <div class="input-wrapper padded-left">
+                <span class="prefix">$</span>
+                <input type="number" id="loanAmount" placeholder="e.g. 25000" min="0" step="1000">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="interestRate">Interest Rate</label>
+                <div class="input-wrapper padded-right">
+                    <input type="number" id="interestRate" placeholder="e.g. 5.5" min="0" step="0.1">
+                    <span class="suffix">%</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="loanTerm">Loan Term</label>
+                <div class="input-wrapper padded-right">
+                    <input type="number" id="loanTerm" placeholder="e.g. 36" min="1" step="1">
+                    <span class="suffix">months</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="calculate-btn" onclick="calculateLoan()">Calculate</button>
+
+        <div class="result" id="result">
+            <div class="result-row">
+                <span class="label">Monthly Payment</span>
+                <span class="value highlight" id="monthlyPayment">$0.00</span>
+            </div>
+            <div class="result-divider"></div>
+            <div class="result-row">
+                <span class="label">Total Payment</span>
+                <span class="value" id="totalPayment">$0.00</span>
+            </div>
+            <div class="result-row">
+                <span class="label">Total Interest</span>
+                <span class="value total-interest" id="totalInterest">$0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateLoan() {
+            const amount = parseFloat(document.getElementById('loanAmount').value);
+            const rate = parseFloat(document.getElementById('interestRate').value);
+            const term = parseInt(document.getElementById('loanTerm').value);
+
+            if (!amount || amount <= 0 || !rate || rate <= 0 || !term || term <= 0) {
+                alert('Please enter valid positive numbers for all fields.');
+                return;
+            }
+
+            const monthlyRate = (rate / 100) / 12;
+            const payment = amount * (monthlyRate * Math.pow(1 + monthlyRate, term)) /
+                (Math.pow(1 + monthlyRate, term) - 1);
+            const totalPayment = payment * term;
+            const totalInterest = totalPayment - amount;
+
+            document.getElementById('monthlyPayment').textContent = '$' + payment.toFixed(2);
+            document.getElementById('totalPayment').textContent = '$' + totalPayment.toFixed(2);
+            document.getElementById('totalInterest').textContent = '$' + totalInterest.toFixed(2);
+            document.getElementById('result').classList.add('show');
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                calculateLoan();
+            }
+        });
+    </script>
+</body>
+</html>
