@@ -2,11 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { nocApi } from '@/lib/api';
 import { StatusBadge } from '@/components/WorkflowStatus';
 import type { NOCRead } from '@/types';
+import { MODULE_ICONS } from '@/types';
 
 export default function NOCListPage() {
+  const router = useRouter();
   const [items, setItems] = useState<NOCRead[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,9 +44,10 @@ export default function NOCListPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {items.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            No NOC applications yet.
-            <Link href="/noc/new" className="block mt-2 text-indigo-600 hover:underline">
+          <div className="p-12 text-center">
+            <p className="text-4xl mb-3">{MODULE_ICONS.NOC}</p>
+            <p className="text-gray-500">No NOC applications yet.</p>
+            <Link href="/noc/new" className="inline-block mt-2 text-indigo-600 hover:underline">
               Create your first NOC
             </Link>
           </div>
@@ -63,7 +67,7 @@ export default function NOCListPage() {
                 <tr
                   key={item.id}
                   className="hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => (window.location.href = `/noc/${item.id}`)}
+                  onClick={() => router.push(`/noc/${item.id}`)}
                 >
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.applicant_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.applicant_email}</td>

@@ -15,13 +15,13 @@ function NavLink({ href, children, icon }: { href: string; children: React.React
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
         active
-          ? 'bg-indigo-50 text-indigo-700'
+          ? 'bg-indigo-50 text-indigo-700 shadow-sm'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
       }`}
     >
-      {icon && <span>{icon}</span>}
+      {icon && <span className="flex-shrink-0">{icon}</span>}
       {children}
     </Link>
   );

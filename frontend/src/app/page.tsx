@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
 import { nocApi, loaApi, financeApi, rentalApi, cancellationApi } from '@/lib/api';
 import { MODULE_LABELS, MODULE_ICONS, MODULE_COLORS, type ModuleType, type DomainReadBase } from '@/types';
@@ -23,6 +24,7 @@ const apis = {
 
 export default function Dashboard() {
   const { user } = useUser();
+  const router = useRouter();
   const [summaries, setSummaries] = useState<ModuleSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -95,7 +97,7 @@ export default function Dashboard() {
               <Link
                 key={s.module}
                 href={`/${s.module.toLowerCase()}`}
-                className={`rounded-xl shadow-sm border p-6 transition-all hover:shadow-md ${s.color}`}
+                className={`rounded-xl shadow-sm border p-6 transition-all hover:shadow-md hover:-translate-y-0.5 ${s.color}`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-2xl">{MODULE_ICONS[s.module]}</span>
@@ -111,31 +113,36 @@ export default function Dashboard() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Recent Applications</h2>
-                <Link href="/" className="text-sm text-indigo-600 hover:text-indigo-800">View all</Link>
+                {recentItems.length > 0 && (
+                  <span className="text-xs text-gray-400">Latest 10</span>
+                )}
               </div>
               <div className="p-6">
                 {recentItems.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
-                    No applications yet. Create one from the sidebar.
-                  </p>
+                  <div className="text-center py-8">
+                    <p className="text-gray-400 text-4xl mb-3">📋</p>
+                    <p className="text-gray-500">
+                      No applications yet. Create one from the sidebar.
+                    </p>
+                  </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {recentItems.map((item: any) => (
-                      <Link
+                      <div
                         key={`${item.module}-${item.id}`}
-                        href={`/${item.module.toLowerCase()}/${item.id}`}
-                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() => router.push(`/${item.module.toLowerCase()}/${item.id}`)}
+                        className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                       >
-                        <div className="flex items-center gap-3">
-                          <span>{MODULE_ICONS[item.module as ModuleType]}</span>
-                          <div>
-                            <div className="text-sm font-medium">
-                              {item.applicant_name || item.tenant_name || item.applicant_name || 'N/A'}
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="flex-shrink-0 text-xl">{MODULE_ICONS[item.module as ModuleType]}</span>
+                          <div className="min-w-0">
+                            <div className="text-sm font-medium truncate">
+                              {item.applicant_name || item.tenant_name || 'N/A'}
                             </div>
                             <div className="text-xs text-gray-500">{MODULE_LABELS[item.module as ModuleType]}</div>
                           </div>
                         </div>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        <span className={`flex-shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           item.status === 'APPROVED' || item.status === 'COMPLETED' || item.status === 'SIGNED'
                             ? 'bg-green-100 text-green-800'
                             : item.status === 'REJECTED'
@@ -144,7 +151,7 @@ export default function Dashboard() {
                         }`}>
                           {item.status.replace(/_/g, ' ')}
                         </span>
-                      </Link>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -160,14 +167,14 @@ export default function Dashboard() {
                   <Link
                     key={mod}
                     href={`/${mod.toLowerCase()}/new`}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-sm transition-all"
                   >
-                    <span className="text-xl">{MODULE_ICONS[mod]}</span>
-                    <div>
+                    <span className="text-xl flex-shrink-0">{MODULE_ICONS[mod]}</span>
+                    <div className="min-w-0">
                       <div className="text-sm font-medium">New {MODULE_LABELS[mod]}</div>
                       <div className="text-xs text-gray-500">Create a new {mod.toLowerCase()} application</div>
                     </div>
-                    <svg className="w-5 h-5 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 ml-auto text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>

@@ -2,11 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { loaApi } from '@/lib/api';
 import { StatusBadge } from '@/components/WorkflowStatus';
 import type { LOARead } from '@/types';
+import { MODULE_ICONS } from '@/types';
 
 export default function LOAListPage() {
+  const router = useRouter();
   const [items, setItems] = useState<LOARead[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,9 +44,10 @@ export default function LOAListPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {items.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
-            No LOA applications yet.
-            <Link href="/loa/new" className="block mt-2 text-indigo-600 hover:underline">
+          <div className="p-12 text-center">
+            <p className="text-4xl mb-3">{MODULE_ICONS.LOA}</p>
+            <p className="text-gray-500">No LOA applications yet.</p>
+            <Link href="/loa/new" className="inline-block mt-2 text-indigo-600 hover:underline">
               Create your first LOA
             </Link>
           </div>
@@ -62,7 +66,7 @@ export default function LOAListPage() {
                 <tr
                   key={item.id}
                   className="hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => (window.location.href = `/loa/${item.id}`)}
+                  onClick={() => router.push(`/loa/${item.id}`)}
                 >
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.applicant_name}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.authorized_person_name}</td>
