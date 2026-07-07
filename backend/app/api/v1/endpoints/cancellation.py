@@ -1,7 +1,7 @@
 """
 Cancellation request domain endpoints.
 """
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints._workflow_helpers import execute_workflow_action, get_current_user
@@ -10,7 +10,7 @@ from app.core.dependencies import get_workflow_engine
 from app.models.domain import Cancellation
 from app.models.user import User
 from app.repositories.domain_repo import DomainRepository
-from app.schemas.domain import CancellationCreate, CancellationRead
+from app.schemas.domain import CancellationCreate, CancellationRead, PaginatedResponse
 from app.schemas.workflow import WorkflowActionRequest, WorkflowHistoryEntry, WorkflowTransitionResponse, ApplicationStatusResponse
 from app.services.workflow_service import WorkflowService
 from app.workflow.engine import WorkflowEngine
@@ -24,9 +24,16 @@ def create_cancellation(payload: CancellationCreate, db: Session = Depends(get_d
     return DomainRepository(db, Cancellation).create(payload.model_dump(), user.id)
 
 
-@router.get("/", response_model=list[CancellationRead])
-def list_cancellation(db: Session = Depends(get_db)):
-    return DomainRepository(db, Cancellation).list()
+@router.get("/", response_model=PaginatedResponse[CancellationRead])
+def list_cancellation(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    repo = DomainRepository(db, Cancellation)
+    items = repo.list(skip=skip, limit=limit)
+    total = repo.count()
+    return {"items": items, "total": total}
 
 
 @router.get("/{cancellation_id}", response_model=CancellationRead)
@@ -49,6 +56,16 @@ def get_application_status(
     engine: WorkflowEngine = Depends(get_workflow_engine),
 ):
     return WorkflowService(db, engine).get_application_status(ENTITY, cancellation_id)
+
+
+@router.get("/{cancellation_id}/actions", response_model=list[str])
+def get_available_actions(
+    cancellation_id: str,
+    db: Session = Depends(get_db),
+    engine: WorkflowEngine = Depends(get_workflow_engine),
+    user: User = Depends(get_current_user),
+):
+    return WorkflowService(db, engine).get_available_actions(ENTITY, cancellation_id, user)
 
 
 def _action(cancellation_id: str, action: str, request: WorkflowActionRequest | None, db: Session, engine: WorkflowEngine, user: User):

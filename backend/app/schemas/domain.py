@@ -3,9 +3,19 @@ Pydantic schemas for domain application APIs.
 """
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Generic, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+T = TypeVar("T")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    """Generic paginated list response."""
+
+    items: list[T]
+    total: int
 
 
 class DomainReadBase(BaseModel):
