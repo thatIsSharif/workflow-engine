@@ -74,3 +74,34 @@ class WorkflowHistoryEntry(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class EntityStatusCount(BaseModel):
+    """Count of applications in a given status for an entity type."""
+
+    entity: str
+    status: str
+    count: int
+
+
+class DashboardSummary(BaseModel):
+    """Aggregated dashboard counts per entity per status."""
+
+    by_entity: list[EntityStatusCount]
+
+
+class RecentActivityEntry(BaseModel):
+    """Lightweight entry for the dashboard activity feed."""
+
+    id: int
+    entity: str
+    entity_id: str
+    old_state: str
+    new_state: str
+    action: str
+    actioned_by: int | None
+    comment: str | None
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True

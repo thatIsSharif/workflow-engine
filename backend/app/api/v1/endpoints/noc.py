@@ -2,7 +2,7 @@
 NOC domain endpoints.
 """
 from app.schemas.workflow import ApplicationStatusResponse
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints._workflow_helpers import execute_workflow_action, get_current_user
@@ -11,7 +11,7 @@ from app.core.dependencies import get_workflow_engine
 from app.models.domain import NOC
 from app.models.user import User
 from app.repositories.domain_repo import DomainRepository
-from app.schemas.domain import NOCCreate, NOCRead
+from app.schemas.domain import NOCCreate, NOCRead, PaginatedResponse
 from app.schemas.workflow import WorkflowActionRequest, WorkflowHistoryEntry, WorkflowTransitionResponse
 from app.services.workflow_service import WorkflowService
 from app.workflow.engine import WorkflowEngine
@@ -29,9 +29,16 @@ def create_noc(
     return DomainRepository(db, NOC).create(payload.model_dump(), user.id)
 
 
-@router.get("/", response_model=list[NOCRead])
-def list_noc(db: Session = Depends(get_db)):
-    return DomainRepository(db, NOC).list()
+@router.get("/", response_model=PaginatedResponse[NOCRead])
+def list_noc(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+):
+    repo = DomainRepository(db, NOC)
+    items = repo.list(skip=skip, limit=limit)
+    total = repo.count()
+    return {"items": items, "total": total}
 
 
 @router.get("/{noc_id}", response_model=NOCRead)
@@ -57,6 +64,17 @@ def get_application_status(
     engine: WorkflowEngine = Depends(get_workflow_engine),
 ):
     return WorkflowService(db, engine).get_application_status(ENTITY, noc_id)
+
+
+@router.get("/{noc_id}/actions", response_model=list[str])
+def get_available_actions(
+    noc_id: str,
+    db: Session = Depends(get_db),
+    engine: WorkflowEngine = Depends(get_workflow_engine),
+    user: User = Depends(get_current_user),
+):
+    return WorkflowService(db, engine).get_available_actions(ENTITY, noc_id, user)
+
 
 def _action(
     noc_id: str,

@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import update
+from sqlalchemy import func, update
 from sqlalchemy.orm import Session
 
 from app.models.workflow import ApplicationStatus, WorkflowHistory
@@ -27,6 +27,31 @@ class WorkflowRepository:
                 WorkflowHistory.entity_id == entity_id,
             )
             .order_by(WorkflowHistory.timestamp.desc())
+            .all()
+        )
+
+    def get_dashboard_counts(self) -> list[dict]:
+        """Return count of applications per entity per status."""
+        rows = (
+            self.db.query(
+                ApplicationStatus.entity,
+                ApplicationStatus.current_state,
+                func.count(ApplicationStatus.id).label("count"),
+            )
+            .group_by(ApplicationStatus.entity, ApplicationStatus.current_state)
+            .order_by(ApplicationStatus.entity, ApplicationStatus.current_state)
+            .all()
+        )
+        return [
+            {"entity": row.entity, "status": row.current_state, "count": row.count}
+            for row in rows
+        ]
+
+    def get_recent_activity(self, limit: int = 20) -> list[WorkflowHistory]:
+        return (
+            self.db.query(WorkflowHistory)
+            .order_by(WorkflowHistory.timestamp.desc())
+            .limit(limit)
             .all()
         )
 

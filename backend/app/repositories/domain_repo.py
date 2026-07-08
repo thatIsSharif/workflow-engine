@@ -21,8 +21,17 @@ class DomainRepository:
         self.db.refresh(entity)
         return entity
 
-    def list(self):
-        return self.db.query(self.model).order_by(self.model.created_at.desc()).all()
+    def list(self, skip: int = 0, limit: int = 100):
+        return (
+            self.db.query(self.model)
+            .order_by(self.model.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def count(self) -> int:
+        return self.db.query(self.model).count()
 
     def get(self, entity_id: str):
         return self.db.get(self.model, UUID(str(entity_id)))
