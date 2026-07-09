@@ -4,7 +4,7 @@ Cancellation request domain endpoints.
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.api.v1.endpoints._workflow_helpers import execute_workflow_action, get_current_user
+from app.api.v1.endpoints._workflow_helpers import create_entity_with_status, execute_workflow_action, get_current_user
 from app.core.database import get_db
 from app.core.dependencies import get_workflow_engine
 from app.models.domain import Cancellation
@@ -21,7 +21,7 @@ ENTITY = "CANCELLATION"
 
 @router.post("/", response_model=CancellationRead)
 def create_cancellation(payload: CancellationCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    return DomainRepository(db, Cancellation).create(payload.model_dump(), user.id)
+    return create_entity_with_status(db, Cancellation, payload.model_dump(), user, ENTITY)
 
 
 @router.get("/", response_model=PaginatedResponse[CancellationRead])
@@ -55,7 +55,10 @@ def get_application_status(
     db: Session = Depends(get_db),
     engine: WorkflowEngine = Depends(get_workflow_engine),
 ):
-    return WorkflowService(db, engine).get_application_status(ENTITY, cancellation_id)
+    status = WorkflowService(db, engine).get_application_status(ENTITY, cancellation_id)
+    if not status:
+        raise HTTPException(status_code=404, detail="Application status not found")
+    return status
 
 
 @router.get("/{cancellation_id}/actions", response_model=list[str])

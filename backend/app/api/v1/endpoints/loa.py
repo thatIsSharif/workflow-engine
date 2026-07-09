@@ -4,7 +4,7 @@ LOA domain endpoints.
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.api.v1.endpoints._workflow_helpers import execute_workflow_action, get_current_user
+from app.api.v1.endpoints._workflow_helpers import create_entity_with_status, execute_workflow_action, get_current_user
 from app.core.database import get_db
 from app.core.dependencies import get_workflow_engine
 from app.models.domain import LOA
@@ -21,7 +21,7 @@ ENTITY = "LOA"
 
 @router.post("/", response_model=LOARead)
 def create_loa(payload: LOACreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    return DomainRepository(db, LOA).create(payload.model_dump(), user.id)
+    return create_entity_with_status(db, LOA, payload.model_dump(), user, ENTITY)
 
 
 @router.get("/", response_model=PaginatedResponse[LOARead])
@@ -55,7 +55,10 @@ def get_application_status(
     db: Session = Depends(get_db),
     engine: WorkflowEngine = Depends(get_workflow_engine),
 ):
-    return WorkflowService(db, engine).get_application_status(ENTITY, loa_id)
+    status = WorkflowService(db, engine).get_application_status(ENTITY, loa_id)
+    if not status:
+        raise HTTPException(status_code=404, detail="Application status not found")
+    return status
 
 
 @router.get("/{loa_id}/actions", response_model=list[str])

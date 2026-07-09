@@ -1,11 +1,16 @@
 """
 Shared helpers for thin domain workflow routers.
 """
+import json
+from datetime import datetime
+
 from fastapi import Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.models.user import User
+from app.models.workflow import ApplicationStatus
+from app.repositories.domain_repo import DomainRepository
 from app.services.workflow_service import WorkflowService, WorkflowServiceError
 from app.workflow.engine import WorkflowEngine
 from app.workflow.validators import ConflictError
@@ -18,6 +23,31 @@ def get_current_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+def create_entity_with_status(
+    db: Session,
+    model: type,
+    data: dict,
+    user: User,
+    entity_name: str,
+) -> object:
+    """Create a domain entity and an initial ApplicationStatus record."""
+    repo = DomainRepository(db, model)
+    entity = repo.create(data, user.id)
+
+    status = ApplicationStatus(
+        entity=entity_name,
+        entity_id=str(entity.id),
+        current_state=entity.status,
+        pending_roles=json.dumps([]),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    db.add(status)
+    db.commit()
+    db.refresh(entity)
+    return entity
 
 
 def execute_workflow_action(
