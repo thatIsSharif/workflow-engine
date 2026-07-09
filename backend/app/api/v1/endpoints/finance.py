@@ -4,7 +4,7 @@ Finance request domain endpoints.
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from app.api.v1.endpoints._workflow_helpers import execute_workflow_action, get_current_user
+from app.api.v1.endpoints._workflow_helpers import create_entity_with_status, execute_workflow_action, get_current_user
 from app.core.database import get_db
 from app.core.dependencies import get_workflow_engine
 from app.models.domain import FinanceRequest
@@ -21,7 +21,7 @@ ENTITY = "FINANCE"
 
 @router.post("/", response_model=FinanceRead)
 def create_finance(payload: FinanceCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    return DomainRepository(db, FinanceRequest).create(payload.model_dump(), user.id)
+    return create_entity_with_status(db, FinanceRequest, payload.model_dump(), user, ENTITY)
 
 
 @router.get("/", response_model=PaginatedResponse[FinanceRead])
@@ -55,7 +55,10 @@ def get_application_status(
     db: Session = Depends(get_db),
     engine: WorkflowEngine = Depends(get_workflow_engine),
 ):
-    return WorkflowService(db, engine).get_application_status(ENTITY, finance_id)
+    status = WorkflowService(db, engine).get_application_status(ENTITY, finance_id)
+    if not status:
+        raise HTTPException(status_code=404, detail="Application status not found")
+    return status
 
 
 @router.get("/{finance_id}/actions", response_model=list[str])
