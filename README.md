@@ -345,3 +345,11 @@ Once the server is running, visit:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 - **OpenAPI JSON**: http://localhost:8000/openapi.json
+
+---
+
+## 10. Demo Addition Page
+
+A simple static HTML page that demonstrates basic addition (5 + 4 + 4 = 13) served from the backend.
+
+Open `backend/demo_add.html` directly in your browser after starting the server, or serve it from any static file server.
