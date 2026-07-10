@@ -20,9 +20,91 @@ control at each transition.
 
 ---
 
-## 2. Architecture
+## 2. Getting Started
 
-### 2.1 Layered Architecture
+### 2.1 Prerequisites
+
+- **Python 3.10+** and `pip`
+- **PostgreSQL 14+** running locally or remotely
+- **virtualenv** or `uv` for environment management
+
+### 2.2 Setup Steps
+
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd workflow-engine
+
+# 2. Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# 3. Install dependencies
+cd backend
+pip install -r requirements.txt
+
+# 4. Configure environment variables
+cp .env.example .env
+# Edit .env to match your PostgreSQL connection (database, user, password)
+
+# 5. Create the database
+createdb workflow_engine
+# or via psql: CREATE DATABASE workflow_engine;
+
+# 6. Run database migrations
+alembic upgrade head
+```
+
+### 2.3 Start the Backend Server
+
+```bash
+cd backend
+uvicorn app.main:app --reload
+```
+
+The server starts at **`http://localhost:8000`**.
+
+| Endpoint | Description |
+|----------|-------------|
+| `http://localhost:8000/` | Root -- welcome message |
+| `http://localhost:8000/docs` | Swagger UI (interactive API docs) |
+| `http://localhost:8000/redoc` | ReDoc (alternative API docs) |
+| `http://localhost:8000/openapi.json` | OpenAPI schema |
+| `http://localhost:8000/health` | Health check |
+
+### 2.4 Application Flow
+
+The request lifecycle follows a layered pipeline:
+
+```
+Client --> Router --> _workflow_helpers.execute_workflow_action()
+               --> WorkflowService.execute_action()
+               --> WorkflowEngine.execute_transition()
+               --> WorkflowValidator.validate_transition()
+               --> ConfigLoader.find_transition()
+               <-- TransitionResult
+               --> WorkflowRepository.add_history_and_update_state()
+               <-- Updated WorkflowInstance
+               <-- HTTP Response
+```
+
+**Step-by-step flow:**
+
+1. A client sends an HTTP request to a domain endpoint (e.g., `POST /api/v1/noc/{id}/submit?user_id=1`).
+2. The **Domain API Router** extracts path/query parameters and calls `execute_workflow_action()`.
+3. `WorkflowService.execute_action()` fetches the `WorkflowInstance` from the database and passes it to the engine.
+4. `WorkflowEngine.execute_transition()` calls `WorkflowValidator` to check that the current state, requested action, and user role are all valid for the given entity type.
+5. `ConfigLoader` looks up the transition definition in `workflows.json` -- if the transition or role is not allowed, an error is returned.
+6. On success, `WorkflowRepository` inserts a `WorkflowHistory` row and updates the `WorkflowInstance` state (with optimistic locking via version number).
+7. The updated instance flows back through the layers and is returned as a JSON response.
+
+This design ensures that every request is validated at each layer -- routing, business logic, permissions, configuration, and persistence -- before any data is changed.
+
+---
+
+## 3. Architecture
+
+### 3.1 Layered Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -71,7 +153,7 @@ The core engine consists of five components:
 - **workflows.json** holds the static workflow definitions (states and
   transitions).
 
-### 2.2 Request Flow
+### 3.2 Request Flow
 
 ```
 Client → Router → _workflow_helpers.execute_workflow_action()
@@ -87,9 +169,9 @@ Client → Router → _workflow_helpers.execute_workflow_action()
 
 ---
 
-## 3. Data Model
+## 4. Data Model
 
-### 3.1 Users
+### 4.1 Users
 
 ```yaml
 User:
@@ -100,7 +182,7 @@ User:
 
 Users are created via a dedicated endpoint and referenced by workflows.
 
-### 3.2 Workflow Instance
+### 4.2 Workflow Instance
 
 ```yaml
 WorkflowInstance:
@@ -117,7 +199,7 @@ WorkflowInstance:
 Indexed on `(entity_type, entity_id)` for lookups and `(entity_type, state)`
 for status queries.
 
-### 3.3 Workflow History
+### 4.3 Workflow History
 
 ```yaml
 WorkflowHistory:
@@ -132,7 +214,7 @@ WorkflowHistory:
 
 Append-only log of every state transition.
 
-### 3.4 Optimistic Locking
+### 4.4 Optimistic Locking
 
 The `version` column on `WorkflowInstance` is incremented on every state change.
 Updates use `WHERE version = <expected>`, raising a 409 Conflict on concurrent
@@ -140,11 +222,11 @@ modification.
 
 ---
 
-## 4. Workflow Configuration
+## 5. Workflow Configuration
 
 Workflows are defined in `backend/app/workflow/config/workflows.json`.
 
-### 4.1 Structure
+### 5.1 Structure
 
 ```json
 {
@@ -173,7 +255,7 @@ Each workflow defines:
 - **transitions**: Map of `"<from_state>:<action>"` → target state and
   allowed roles
 
-### 4.2 Configuration Validation
+### 5.2 Configuration Validation
 
 On startup, `validate_workflow_config()` checks:
 
@@ -184,9 +266,9 @@ On startup, `validate_workflow_config()` checks:
 
 ---
 
-## 5. Workflows
+## 6. Workflows
 
-### 5.1 NOC (No Objection Certificate)
+### 6.1 NOC (No Objection Certificate)
 
 ```
 DRAFT ──SUBMIT──→ OFFICER_REVIEW ──APPROVE──→ CONTROLLER_REVIEW
@@ -202,7 +284,7 @@ CONTROLLER_REVIEW ──APPROVE──→ HEAD_APPROVAL ──APPROVE──→ AP
                                   └──REJECT──→ REJECTED
 ```
 
-### 5.2 LOA (Leave of Absence)
+### 6.2 LOA (Leave of Absence)
 
 ```
 DRAFT ──SUBMIT──→ ADMIN_REVIEW ──APPROVE──→ APPROVED
@@ -210,7 +292,7 @@ DRAFT ──SUBMIT──→ ADMIN_REVIEW ──APPROVE──→ APPROVED
                     │  └──REVERT──┘
 ```
 
-### 5.3 Finance
+### 6.3 Finance
 
 ```
 PENDING ──SUBMIT──→ CONTROLLER_APPROVAL ──APPROVE──→ FINANCE_CONFIRMATION
@@ -220,7 +302,7 @@ PENDING ──SUBMIT──→ CONTROLLER_APPROVAL ──APPROVE──→ FINANCE
                        └──REJECT──→ REJECTED            └──CONFIRM──→ COMPLETED
 ```
 
-### 5.4 Rental
+### 6.4 Rental
 
 ```
 DRAFT ──SUBMIT──→ UNDER_REVIEW ──APPROVE──→ APPROVED ──SIGN──→ SIGNED
@@ -228,7 +310,7 @@ DRAFT ──SUBMIT──→ UNDER_REVIEW ──APPROVE──→ APPROVED ──S
                     │  └──REVERT──┘
 ```
 
-### 5.5 Cancellation
+### 6.5 Cancellation
 
 ```
 REQUESTED ──SUBMIT──→ UNDER_REVIEW ──APPROVE──→ APPROVED
@@ -238,11 +320,11 @@ REQUESTED ──SUBMIT──→ UNDER_REVIEW ──APPROVE──→ APPROVED
 
 ---
 
-## 6. API Design
+## 7. API Design
 
 All endpoints follow a consistent pattern.
 
-### 6.1 Endpoint Conventions
+### 7.1 Endpoint Conventions
 
 | Method | Path | Description |
 |--------|------|-------------|
@@ -257,7 +339,7 @@ All endpoints follow a consistent pattern.
 | POST | `/api/v1/{entity}/{id}/sign` | Sign (entity-specific) |
 | POST | `/api/v1/{entity}/{id}/confirm` | Confirm (entity-specific) |
 
-### 6.2 Response Format
+### 7.2 Response Format
 
 **Success (200):**
 ```json
@@ -277,7 +359,7 @@ All endpoints follow a consistent pattern.
 }
 ```
 
-### 6.3 Error Codes
+### 7.3 Error Codes
 
 | Status | Code | When |
 |--------|------|------|
@@ -289,9 +371,9 @@ All endpoints follow a consistent pattern.
 
 ---
 
-## 7. Security
+## 8. Security
 
-### 7.1 Role-Based Access Control
+### 8.1 Role-Based Access Control
 
 Each transition in the workflow config declares which user roles are permitted
 to execute it. The `WorkflowValidator` checks the requesting user's role against
@@ -299,14 +381,14 @@ the allowed roles for the transition.
 
 Roles: `PRO`, `OFFICER`, `CONTROLLER`, `HEAD`, `USER`, `ADMIN`, `FINANCE`
 
-### 7.2 Request ID Tracking
+### 8.2 Request ID Tracking
 
 Every request receives a `X-Request-ID` header (auto-generated if not
 provided). This ID flows through logs and error responses for traceability.
 
 ---
 
-## 8. Testing
+## 9. Testing
 
 Tests are located in `backend/tests/` and use pytest. Key test areas:
 
@@ -317,7 +399,7 @@ Tests are located in `backend/tests/` and use pytest. Key test areas:
 
 ---
 
-## 9. Technology Stack
+## 10. Technology Stack
 
 | Component | Technology |
 |-----------|-----------|
@@ -331,7 +413,7 @@ Tests are located in `backend/tests/` and use pytest. Key test areas:
 
 ---
 
-## 10. Future Considerations
+## 11. Future Considerations
 
 - **Notifications**: Post-transition hooks for email/SMS/Slack alerts
 - **Webhooks**: External system callbacks on state changes
