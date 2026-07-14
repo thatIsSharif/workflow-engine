@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAN-104 Demo-Sum &mdash; 5 * 8 + 1</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+        .card {
+            background: #ffffff;
+            padding: 2.5rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 480px;
+        }
+        h1 {
+            margin: 0 0 1.25rem;
+            font-size: 1.25rem;
+            color: #4b5563;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .expression {
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        .equals {
+            color: #6b7280;
+            font-weight: 400;
+        }
+        .result {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin: 0.5rem 0 0;
+        }
+        footer {
+            margin-top: 1.75rem;
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+        @media (prefers-color-scheme: dark) {
+            body { background: #0f172a; color: #e5e7eb; }
+            .card { background: #1e293b; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+            h1 { color: #cbd5e1; }
+            .expression { color: #f1f5f9; }
+            .result { color: #60a5fa; }
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <h1>KAN-104 Demo-Sum</h1>
+        <p class="expression">5 &times; 8 + 1</p>
+        <p class="expression"><span class="equals">=</span></p>
+        <p class="result" id="result">41</p>
+        <footer>Standard arithmetic order of operations: multiplication before addition.</footer>
+    </main>
+    <script>
+        // Compute 5 * 8 + 1 at runtime so the page always reflects the expression.
+        (function () {
+            var result = 5 * 8 + 1;
+            document.getElementById('result').textContent = result;
+            document.title = 'KAN-104 Demo-Sum - ' + result;
+        })();
+    </script>
+</body>
+</html>
