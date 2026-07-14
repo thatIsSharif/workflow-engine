@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sum Show - 5 + 9</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 48px 64px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h1 {
+            margin: 0 0 24px 0;
+            font-size: 28px;
+            font-weight: 500;
+        }
+        .equation {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 4px;
+        }
+        .label {
+            margin-top: 24px;
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>5 + 9</h1>
+        <p class="equation" id="result">14</p>
+        <p class="label">Output</p>
+    </div>
+    <script>
+        document.getElementById("result").textContent = 5 + 9;
+    </script>
+</body>
+</html>
