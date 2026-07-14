@@ -3,13 +3,13 @@ Workflow repository for atomic state transitions.
 """
 
 import json
-from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import func, update
 from sqlalchemy.orm import Session
 
 from app.models.workflow import ApplicationStatus, WorkflowHistory
+from app.utils import utc_now
 from app.workflow.validators import ConflictError
 
 
@@ -104,7 +104,7 @@ class WorkflowRepository:
             .values(
                 status=new_state,
                 version=expected_version + 1,
-                updated_at=datetime.utcnow(),
+                updated_at=utc_now(),
             )
         )
         result = self.db.execute(stmt)
@@ -139,7 +139,7 @@ class WorkflowRepository:
                 entity=entity,
                 entity_id=entity_id,
                 submitted_by=submitter_id,
-                created_at=datetime.utcnow(),
+                created_at=utc_now(),
             )
             self.db.add(status)
 
@@ -149,7 +149,7 @@ class WorkflowRepository:
         status.last_action = action
         status.last_comment = comment
         status.submitted_by = status.submitted_by or submitter_id
-        status.updated_at = datetime.utcnow()
+        status.updated_at = utc_now()
 
         self.db.flush()
         updated_entity = self.db.get(model, UUID(str(entity_id)))

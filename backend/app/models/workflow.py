@@ -1,11 +1,10 @@
 """
 Workflow audit and projection models.
 """
-from datetime import datetime
-
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 
 from app.models.base import Base
+from app.utils import utc_now
 
 
 class WorkflowHistory(Base):
@@ -22,7 +21,7 @@ class WorkflowHistory(Base):
     actioned_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     submitter_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     comment = Column(Text, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    timestamp = Column(DateTime, default=utc_now, nullable=False, index=True)
 
 
 class ApplicationStatus(Base):
@@ -42,7 +41,7 @@ class ApplicationStatus(Base):
     last_action = Column(String(100), nullable=True)
     last_comment = Column(Text, nullable=True)
     submitted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
     updated_at = Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        DateTime, default=utc_now, onupdate=utc_now, nullable=False
     )

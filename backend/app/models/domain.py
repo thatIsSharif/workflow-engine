@@ -2,18 +2,18 @@
 Domain application tables.
 """
 import uuid
-from datetime import datetime
 
 from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.types import Uuid
 
 from app.models.base import Base
+from app.utils import utc_now
 
 
 class TimestampMixin:
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
     updated_at = Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        DateTime, default=utc_now, onupdate=utc_now, nullable=False
     )
 
 

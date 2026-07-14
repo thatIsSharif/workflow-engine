@@ -2,7 +2,6 @@
 Shared helpers for thin domain workflow routers.
 """
 import json
-from datetime import datetime
 
 from fastapi import Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -12,6 +11,7 @@ from app.models.user import User
 from app.models.workflow import ApplicationStatus
 from app.repositories.domain_repo import DomainRepository
 from app.services.workflow_service import WorkflowService, WorkflowServiceError
+from app.utils import utc_now
 from app.workflow.engine import WorkflowEngine
 from app.workflow.validators import ConflictError
 
@@ -41,8 +41,8 @@ def create_entity_with_status(
         entity_id=str(entity.id),
         current_state=entity.status,
         pending_roles=json.dumps([]),
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=utc_now(),
+        updated_at=utc_now(),
     )
     db.add(status)
     db.commit()
