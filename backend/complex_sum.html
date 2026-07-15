@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComplexSum - KAN-126</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            margin: 0 0 0.5rem;
+            font-size: 1.8rem;
+            color: #333;
+        }
+        .expression {
+            font-size: 1.4rem;
+            color: #666;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .result {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0 0.5rem;
+        }
+        .steps {
+            font-size: 0.95rem;
+            color: #888;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        .steps span {
+            display: inline-block;
+            margin: 0.2rem 0;
+        }
+        .issue {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>ComplexSum</h1>
+        <div class="expression">11 + 5 - 5 + 7 + 5 &times; 9 - 1 + 4</div>
+        <div class="result">66</div>
+        <div class="steps">
+            <span>Step 1: Multiplication first &rarr; 5 &times; 9 = 45</span><br>
+            <span>Step 2: 11 + 5 - 5 + 7 + 45 - 1 + 4 = 66</span>
+        </div>
+        <div class="issue">KAN-126</div>
+    </div>
+</body>
+</html>
