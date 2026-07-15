@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ques2 - Math Expression</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 24px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .expression {
+            font-size: 28px;
+            color: #444;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-family: 'Courier New', monospace;
+        }
+        .result {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .steps {
+            text-align: left;
+            margin-top: 20px;
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Ques2</h1>
+        <p class="subtitle">Math Expression Evaluation</p>
+        <div class="expression">7 + 6 × 1 - 2 + 8</div>
+        <div class="result">= 19</div>
+        <div class="steps">
+            <strong>Step-by-step:</strong><br>
+            1. Multiplication first: 6 × 1 = 6<br>
+            2. Then: 7 + 6 - 2 + 8<br>
+            3. Left to right: 13 - 2 + 8<br>
+            4. Result: 11 + 8 = <strong>19</strong>
+        </div>
+    </div>
+</body>
+</html>
