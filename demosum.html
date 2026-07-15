@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DemoSum - Calculation Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            margin: 0 0 24px;
+            color: #4a5568;
+            font-size: 24px;
+        }
+        .expression {
+            font-size: 28px;
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .result {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        .steps {
+            text-align: left;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.8;
+        }
+        .steps code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>DemoSum Calculation</h1>
+        <div class="expression">1 + 5 - 5 + 7 + 5 &times; 9 - 1 + 4</div>
+        <div class="result">= 56</div>
+        <div class="steps">
+            <strong>Step-by-step:</strong><br>
+            1 + 5 - 5 + 7 + 5 &times; 9 - 1 + 4<br>
+            = 1 + 5 - 5 + 7 + <strong>45</strong> - 1 + 4 &nbsp;(multiplication first)<br>
+            = 6 - 5 + 7 + 45 - 1 + 4<br>
+            = 1 + 7 + 45 - 1 + 4<br>
+            = 8 + 45 - 1 + 4<br>
+            = 53 - 1 + 4<br>
+            = 52 + 4<br>
+            = <strong>56</strong>
+        </div>
+    </div>
+</body>
+</html>
