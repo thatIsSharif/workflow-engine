@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question 11 - Calculation Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        .expression {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .result {
+            font-size: 3.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        .steps {
+            text-align: left;
+            background: #f5f7ff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: 0.95em;
+            color: #444;
+        }
+        .steps div {
+            padding: 4px 0;
+        }
+        .label {
+            font-size: 0.85em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="label">Question 11</div>
+        <div class="expression">
+            1300 + 1 + 15 - 52 + 117 + 5 &times; 9 - 11 + 140 + 1
+        </div>
+        <div class="result">1556</div>
+        <div class="steps">
+            <strong>Step-by-step:</strong>
+            <div>5 &times; 9 = 45</div>
+            <div>1300 + 1 = 1301</div>
+            <div>1301 + 15 = 1316</div>
+            <div>1316 - 52 = 1264</div>
+            <div>1264 + 117 = 1381</div>
+            <div>1381 + 45 = 1426</div>
+            <div>1426 - 11 = 1415</div>
+            <div>1415 + 140 = 1555</div>
+            <div>1555 + 1 = <strong>1556</strong></div>
+        </div>
+    </div>
+</body>
+</html>
