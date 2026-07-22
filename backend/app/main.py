@@ -10,7 +10,7 @@ import uuid
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.config import settings
@@ -128,6 +128,55 @@ async def root():
         "version": settings.app_version,
         "docs": "/docs",
     }
+
+
+@app.get("/calc", response_class=HTMLResponse)
+async def calc():
+    """Simple HTML page showing the result of 5 + 1 - 2."""
+    result = 5 + 1 - 2
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation Result</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }}
+        .card {{
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 3rem 4rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }}
+        .expression {{
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }}
+        .result {{
+            font-size: 4rem;
+            font-weight: bold;
+        }}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="expression">5 + 1 - 2</div>
+        <div class="result">= {result}</div>
+    </div>
+</body>
+</html>"""
 
 
 if __name__ == "__main__":
